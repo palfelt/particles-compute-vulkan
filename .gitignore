@@ -1,0 +1,7 @@
+build/
+install/
+out/build/
+out/build/Vulkan_preset/
+compile_commands.json
+.cache/
+imgui.ini

@@ -1,0 +1,58 @@
+#version 460
+
+layout(local_size_x = 128) in;
+
+struct tParticle
+{
+    vec4 Position;
+    vec4 Velocity;
+};
+
+layout(set = 0, binding = 0) uniform tSimUBO
+{
+    float DeltaTime;
+}
+SimParams;
+
+layout(std430, set = 0, binding = 1) buffer ParticlesRead
+{
+    tParticle ParticlesIn[];
+};
+
+layout(std430, set = 0, binding = 2) buffer ParticlesWrite
+{
+    tParticle ParticlesOut[];
+};
+
+void main()
+{
+    uint i = gl_GlobalInvocationID.x;
+    uint numParticles = ParticlesIn.length();
+    if (i >= numParticles)
+        return;
+
+    float dt = SimParams.DeltaTime;
+
+    tParticle p = ParticlesIn[i];
+
+    vec3 acceleration = vec3(0.0);
+    for (uint j = 0; j < numParticles; ++j)
+    {
+        if (j == i)
+            continue;
+        tParticle other = ParticlesIn[j];
+
+        vec3 dir = other.Position.xyz - p.Position.xyz;
+        float distSqr = clamp(dot(dir, dir), 1e-1, 1e6);
+        float invDist = inversesqrt(distSqr);
+        float invDist3 = invDist * invDist * invDist;
+
+        float mass = other.Position.w;
+        acceleration += 1e-5 * mass * dir * invDist3;
+    }
+
+    p.Velocity.xyz += acceleration * dt;
+    p.Position.xyz += p.Velocity.xyz * dt;
+
+    ParticlesOut[i] = p;
+}

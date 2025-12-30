@@ -1,0 +1,14 @@
+{
+    "recommendations": [
+        "dtoplak.vscode-glsllint",
+        "eamodio.gitlens",
+        "letmaik.git-tree-compare",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-vscode.cpptools-themes",
+        "slevesque.shader",
+        "xaver.clang-format"
+    ]
+}

@@ -1,0 +1,34 @@
+BasedOnStyle: LLVM
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: true
+  AfterClass: true
+  AfterControlStatement: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterEnum: true
+  BeforeElse: true
+  BeforeCatch: true
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 120
+
+BinPackArguments: false
+BinPackParameters: false
+AlignAfterOpenBracket: Align
+AllowShortFunctionsOnASingleLine: Inline
+
+IncludeBlocks: Regroup
+SortIncludes: true
+IncludeCategories:
+  - Regex: '^<[^/]+>$'            # Standard library headers, e.g. <vector>, <cassert>
+    Priority: 1
+  - Regex: '^<[^"]+/.+>$'         # Third-party headers, e.g. <spdlog/spdlog.h>, <glm/glm.hpp>
+    Priority: 2
+  - Regex: '^".*"$'               # Project headers, e.g. "tApp.h"
+    Priority: 3
+
+KeepEmptyLinesAtTheStartOfBlocks: true

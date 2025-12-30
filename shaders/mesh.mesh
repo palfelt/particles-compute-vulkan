@@ -1,0 +1,72 @@
+#version 460
+#extension GL_EXT_mesh_shader : require
+#extension GL_EXT_buffer_reference : require
+
+layout(local_size_x = 64) in;
+layout(max_vertices = 64, max_primitives = 64) out;
+layout(points) out;
+
+struct tParticle
+{
+    vec4 Position;
+    vec4 Velocity;
+};
+
+layout(buffer_reference, std430) readonly buffer ParticleBuffer
+{
+    tParticle particles[];
+};
+
+layout(push_constant) uniform PushConstants
+{
+    ParticleBuffer particles;
+    uint numParticles;
+    uint _pad0;
+    uint _pad1;
+    uint _pad2;
+}
+pc;
+
+layout(set = 1, binding = 0) uniform tCameraUBO
+{
+    mat4 Projection;
+    mat4 View;
+}
+camera;
+
+layout(location = 0) out float Speed[];
+
+void main()
+{
+    uint base = gl_WorkGroupID.x * gl_WorkGroupSize.x;
+    uint local = gl_LocalInvocationIndex;
+    uint index = base + local;
+    uint numParticles = pc.numParticles;
+
+    uint count = 0;
+    if (base < numParticles)
+    {
+        uint remaining = numParticles - base;
+        count = min(remaining, gl_WorkGroupSize.x);
+    }
+
+    // EXT: declare how many vertices + primitives this workgroup emits
+    if (local == 0)
+    {
+        SetMeshOutputsEXT(count, count); // vertices=count, primitives=count for points
+    }
+
+    if (index >= numParticles)
+        return;
+
+    tParticle p = pc.particles.particles[index];
+    vec4 worldPos = vec4(p.Position.xyz, 1.0);
+
+    gl_MeshVerticesEXT[local].gl_Position = camera.Projection * camera.View * worldPos;
+    gl_MeshVerticesEXT[local].gl_PointSize = 1.5;
+
+    Speed[local] = length(p.Velocity.xyz);
+
+    // one point primitive per vertex
+    gl_PrimitivePointIndicesEXT[local] = local;
+}

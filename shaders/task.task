@@ -1,0 +1,38 @@
+#version 460
+#extension GL_EXT_mesh_shader : require
+#extension GL_EXT_buffer_reference : require
+
+layout(local_size_x = 1) in;
+
+struct tParticle
+{
+    vec4 Position;
+    vec4 Velocity;
+};
+
+layout(buffer_reference, std430) readonly buffer ParticleBuffer
+{
+    tParticle particles[];
+};
+
+layout(push_constant) uniform PushConstants
+{
+    ParticleBuffer particles;
+    uint numParticles;
+    uint _pad0;
+    uint _pad1;
+    uint _pad2;
+}
+pc;
+
+void main()
+{
+    if (pc.numParticles == 0)
+    {
+        return;
+    }
+
+    const uint kMeshLocalSize = 64; // Keep in sync with mesh.mesh local_size_x.
+    const uint groupCount = (pc.numParticles + kMeshLocalSize - 1) / kMeshLocalSize;
+    EmitMeshTasksEXT(groupCount, 1, 1);
+}
