@@ -1,4 +1,4 @@
-# vulkan-compute
+# particles-compute-vulkan
 
 Naive particle simulation using Vulkan RAII + compute + mesh/task shaders. Tested on Ubuntu 24.04.3 LTS
 
