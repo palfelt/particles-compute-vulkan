@@ -10,7 +10,7 @@ Naive particle simulation using Vulkan RAII + compute + mesh/task shaders. Teste
 - Dynamic rendering via task + mesh shaders
 - Barebones `Dear ImGui` + `Tracy Profiler` +  `spdlog` integration
 
-## Pre-requisites
+## Prerequisites
 
 - Vulkan 1.4, SPIR-V 1.6
 - GPU with the `VK_EXT_mesh_shader` feature
